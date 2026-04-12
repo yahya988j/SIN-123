@@ -37,10 +37,11 @@
         .btn-join-now { background: linear-gradient(45deg, var(--gold), #fff, var(--gold)); background-size: 200%; color: #000; border: none; padding: 22px; border-radius: 25px; font-weight: 900; width: 100%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 15px 40px rgba(212,175,55,0.3); animation: glowBtn 3s infinite; margin-top: 10px; }
         @keyframes glowBtn { 0% { background-position: 0%; } 100% { background-position: 200%; } }
 
-        /* ستايل المعالج */
-        .step-container { display: none; text-align: center; animation: slideIn 0.4s ease-out; }
+        /* تعديل توسيط معالج البيانات */
+        #wizard-ui { flex-grow: 1; display: none; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+        .step-container { display: none; text-align: center; animation: slideIn 0.4s ease-out; width: 100%; }
         .step-container.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
         input { width: 100%; padding: 18px; background: rgba(0,0,0,0.5); border: 1px solid #444; border-radius: 18px; color: #fff; outline: none; margin-bottom: 20px; text-align: center; font-size: 18px; }
         input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
@@ -80,7 +81,7 @@
             <button class="btn-join-now" onclick="startWizard()">انضم لعرين الصقور الآن <i class="fas fa-arrow-left"></i></button>
         </div>
 
-        <div id="wizard-ui" style="display:none; padding-top:20px;">
+        <div id="wizard-ui">
             <div id="step-1" class="step-container active">
                 <h2 style="color:var(--gold)">الاسم الكامل يا صقر؟</h2>
                 <input type="text" id="j-name" placeholder="الاسم الكامل كما في الهوية">
@@ -108,7 +109,7 @@
             </div>
         </div>
 
-        <div id="verify-wait-ui" style="display:none; text-align:center; padding-top:20px;">
+        <div id="verify-wait-ui" style="display:none; text-align:center; flex-grow:1; flex-direction:column; justify-content:center;">
             <i class="fas fa-envelope-open-text fa-5x" style="color:var(--gold); margin-bottom:20px; animation: waveMove 2s infinite;"></i>
             <h2 style="color:var(--gold)">تحقق من بريدك الآن!</h2>
             <p style="font-size:14px; opacity:0.9;">أرسلنا رابط التحقق لضمان أمان حسابك.</p>
@@ -132,14 +133,14 @@
             <button class="btn-gold" style="margin-top:25px; background:transparent; border:1px solid var(--gold); color:var(--gold);" onclick="checkEmailVerified()">لقد تحققت، استمرار <i class="fas fa-arrow-left"></i></button>
         </div>
 
-        <div id="admin-wait-ui" style="display:none; text-align:center; padding-top:40px;">
+        <div id="admin-wait-ui" style="display:none; text-align:center; flex-grow:1; flex-direction:column; justify-content:center;">
             <img src="https://i.postimg.cc/3RmMjYNd/Whats-App-Image-2026-04-10-at-6-22-30-PM.jpg" class="royal-logo">
             <h2 style="color:var(--gold);">تم الاستلام يا صقر 🦅</h2>
             <p style="opacity:0.9; line-height:1.8; padding:0 15px;">طلب توظيفك بين أيدي إدارة الشاهين. سيتم التواصل معك قريباً جداً على الرقم المسجل لدينا.</p>
             <div style="margin:20px 0; color:var(--gold); font-weight:bold;">"الشاهين لا يرضى إلا بالقمة"</div>
         </div>
 
-        <p style="margin-top:auto; padding-bottom:20px; font-size:12px; color:rgba(212,175,55,0.5); text-align:center;">جميع الحقوق محفوظة لصقور الشاهين © 2026</p>
+        <p id="footer-text" style="margin-top:auto; padding-bottom:20px; font-size:12px; color:rgba(212,175,55,0.5); text-align:center;">جميع الحقوق محفوظة لصقور الشاهين © 2026</p>
     </div>
 </div>
 
@@ -165,7 +166,8 @@
 
     function startWizard() {
         document.getElementById('hero-ui').style.display = 'none';
-        document.getElementById('wizard-ui').style.display = 'block';
+        document.getElementById('wizard-ui').style.display = 'flex';
+        document.getElementById('footer-text').style.display = 'none';
     }
 
     function nextStep(s) {
@@ -207,7 +209,7 @@
                     timestamp: Date.now()
                 });
                 document.getElementById('wizard-ui').style.display = 'none';
-                document.getElementById('verify-wait-ui').style.display = 'block';
+                document.getElementById('verify-wait-ui').style.display = 'flex';
             });
         }).catch(err => {
             btn.disabled = false;
@@ -224,7 +226,7 @@
         auth.currentUser.reload().then(() => {
             if(auth.currentUser.emailVerified) {
                 document.getElementById('verify-wait-ui').style.display = 'none';
-                document.getElementById('admin-wait-ui').style.display = 'block';
+                document.getElementById('admin-wait-ui').style.display = 'flex';
                 db.ref('sh_driver_requests/' + auth.currentUser.uid).update({ status: 'pending_admin' });
             } else {
                 showFalconNotice("أوبس يا صقر.. لم تفعل الإيميل بعد، تأكد من صندوق الوارد أو Spam.");
