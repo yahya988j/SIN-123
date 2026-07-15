@@ -830,6 +830,7 @@
             <img src="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" class="consult-img-inner">
         </div>
         <div class="pulse-text" id="consulting-status-text" style="font-size: 16px; margin-top: 30px;">جاري التواصل مع الشريك...</div>
+        <div id="consulting-call-btn-holder" style="display:none; width:100%;"></div>
         <button id="cancel-consult-btn" class="btn-gold" style="width: 70%; margin-top: 25px; background: #555; color: #fff;" onclick="cancelOrder()">إلغاء الطلب</button>
     </div>
 
@@ -4490,6 +4491,15 @@
     async function _submitMedicalConsult_inner() {
         const ph = pharmacyData.find(p => String(p.id) === String(selectedPharmacyId));
         if (!ph) { showNotify("عذراً، لم يتم العثور على بيانات الصيدلية", "error"); return; }
+        // [FEATURE-BLOCK-CUSTOMER-CONSULT] فحص حظر العميل من الاستشارات (يديره الإدارة) — قبل أي
+        // خطوة أخرى، سواء استشارة صوتية أو كتابية
+        try {
+            const { data: custCheck } = await _supabase.from('customers').select('is_blocked_from_consultation').eq('id', currentUser.uid).maybeSingle();
+            if (custCheck && custCheck.is_blocked_from_consultation) {
+                showNotify('⛔ عذراً، حسابك موقوف عن استخدام خدمة الاستشارات. تواصل مع الدعم لمزيد من التفاصيل', 'error');
+                return;
+            }
+        } catch(e) { /* لا نمنع الاستشارة لو فشل الفحص نفسه لأي سبب تقني */ }
         // [SEC-FIX-ADDRESS-REQUIRED-ALL-PATHS] استشارة الصيدلية تنتهي بتوصيل الدواء — تتطلب عنواناً
         if (!(await _verifyCustomerAddressLive(true))) return;
         
@@ -6378,6 +6388,7 @@
         document.getElementById('consulting-status-text').innerText = `🏥 ${pharmName}\nبانتظار ردّ الصيدلية...`;
 
         if (_pharmWaitChannel) { try { _supabase.removeChannel(_pharmWaitChannel); } catch(e){} }
+        console.log('[CALL-DEBUG] _showPharmacyWaitingScreen — consultation_type:', order.consultation_type);
         _pharmWaitChannel = _supabase.channel('pharm_wait_' + order.id)
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sh_public_orders', filter: 'id=eq.' + order.id }, (payload) => {
                 if (payload.new && payload.new.suggested_medications) {
@@ -6396,68 +6407,62 @@
 
         // [FEATURE-INCOMING-CALL] لو الاستشارة صوتية، نستمع لإشارة اتصال واردة من الصيدلي
         if (order.consultation_type === 'voice') {
-            _listenForIncomingCall(order.id, pharmName);
+            _prepareCustomerCall(order.id);
         }
     }
 
-    // [FEATURE-INCOMING-CALL] استقبال مكالمة واردة من الصيدلي — شاشة رنين حقيقية باسم الصيدلية،
-    // بدل اتصال صامت بدون أي تنبيه للعميل
-    let _incomingCallChannel = null;
+    // [FIX-CALL-DIRECTION] العميل هو من يبدأ الاتصال، الصيدلي يرد — عكس التصميم الأول
+    let _voiceSignalChannel = null;
     let _customerPeerConnection = null;
     let _customerLocalStream = null;
-    function _listenForIncomingCall(orderId, callerName) {
-        if (_incomingCallChannel) { try { _supabase.removeChannel(_incomingCallChannel); } catch(e){} }
-        _incomingCallChannel = _supabase.channel('voice_signal_' + orderId)
-            .on('broadcast', { event: 'offer' }, ({ payload }) => {
-                if (payload.from !== 'pharmacy') return;
-                _showIncomingCallScreen(orderId, callerName, payload.offer);
+    function _prepareCustomerCall(orderId) {
+        console.log('[CALL-DEBUG] _prepareCustomerCall استُدعيت، orderId:', orderId);
+        if (_voiceSignalChannel) { try { _supabase.removeChannel(_voiceSignalChannel); } catch(e){} }
+        _voiceSignalChannel = _supabase.channel('voice_signal_' + orderId)
+            .on('broadcast', { event: 'answer' }, async ({ payload }) => {
+                if (payload.from !== 'pharmacy' || !_customerPeerConnection) return;
+                await _customerPeerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
             })
             .on('broadcast', { event: 'ice-candidate' }, async ({ payload }) => {
                 if (payload.from !== 'pharmacy' || !_customerPeerConnection) return;
                 try { await _customerPeerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) {}
             })
             .subscribe();
+        // إظهار زر الاتصال بشاشة الانتظار
+        const btnHolder = document.getElementById('consulting-call-btn-holder');
+        console.log('[CALL-DEBUG] btnHolder موجود؟', !!btnHolder);
+        if (btnHolder) {
+            btnHolder.style.display = 'block';
+            btnHolder.innerHTML = `<button onclick="_startCustomerCall('${orderId}')" style="width:70%; margin:14px auto 0; display:block; padding:12px; background:#2ecc71; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer;"><i class="fas fa-phone"></i> اتصل بالصيدلية الآن</button>`;
+            console.log('[CALL-DEBUG] زر الاتصال أُضيف للشاشة');
+        } else {
+            console.error('[CALL-DEBUG] عنصر consulting-call-btn-holder غير موجود بالصفحة!');
+        }
     }
 
-    function _showIncomingCallScreen(orderId, callerName, offer) {
-        try { document.getElementById('searching-sound').play().catch(()=>{}); } catch(e) {}
-        const overlay = document.createElement('div');
-        overlay.id = 'incoming-call-overlay';
-        overlay.style.cssText = 'position:fixed; inset:0; background:#0d0221; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px;';
-        overlay.innerHTML = `
-            <div class="consult-loader-ring" style="margin-bottom:20px;">
-                <img src="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" class="consult-img-inner">
-            </div>
-            <div style="font-size:12px; color:#aaa; margin-bottom:6px;">مكالمة واردة من</div>
-            <div style="font-size:20px; color:var(--gold); font-weight:bold; margin-bottom:30px;">🏥 ${escHtml(callerName)}</div>
-            <div style="display:flex; gap:30px;">
-                <button onclick="_declineIncomingCall('${orderId}')" style="width:64px; height:64px; border-radius:50%; background:#e74c3c; border:none; color:#fff; font-size:22px;"><i class="fas fa-phone-slash"></i></button>
-                <button onclick="_answerIncomingCall('${orderId}')" style="width:64px; height:64px; border-radius:50%; background:#2ecc71; border:none; color:#fff; font-size:22px; animation:pulse 1.2s infinite;"><i class="fas fa-phone"></i></button>
-            </div>`;
-        document.body.appendChild(overlay);
-        overlay.dataset.offer = JSON.stringify(offer);
-    }
-
-    async function _answerIncomingCall(orderId) {
-        const overlay = document.getElementById('incoming-call-overlay');
-        const offer = overlay ? JSON.parse(overlay.dataset.offer) : null;
-        try { document.getElementById('searching-sound').pause(); } catch(e) {}
-        if (overlay) overlay.remove();
-        if (!offer) return;
-
+    async function _startCustomerCall(orderId) {
+        console.log('[CALL-DEBUG] _startCustomerCall استُدعيت، orderId:', orderId);
         try {
             _customerLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('[CALL-DEBUG] تم الحصول على إذن الميكروفون بنجاح');
         } catch(e) {
-            showNotify('⚠️ يرجى السماح باستخدام الميكروفون للرد على المكالمة', 'error');
+            console.error('[CALL-DEBUG] فشل الحصول على إذن الميكروفون:', e);
+            showNotify('⚠️ يرجى السماح باستخدام الميكروفون لبدء الاتصال', 'error');
             return;
         }
+        const btnHolder = document.getElementById('consulting-call-btn-holder');
+        if (btnHolder) btnHolder.innerHTML = `<div style="color:#2ecc71; font-size:12px; margin-top:10px;"><i class="fas fa-phone-volume"></i> جاري الاتصال بالصيدلية...</div>`;
 
         _customerPeerConnection = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }]
         });
         _customerLocalStream.getTracks().forEach(t => _customerPeerConnection.addTrack(t, _customerLocalStream));
         _customerPeerConnection.onicecandidate = (event) => {
-            if (event.candidate) _incomingCallChannel.send({ type: 'broadcast', event: 'ice-candidate', payload: { candidate: event.candidate, from: 'customer' } });
+            if (event.candidate) _voiceSignalChannel.send({ type: 'broadcast', event: 'ice-candidate', payload: { candidate: event.candidate, from: 'customer' } });
+        };
+        _customerPeerConnection.ontrack = (event) => {
+            document.getElementById('customer-remote-audio').srcObject = event.streams[0];
+            if (btnHolder) btnHolder.innerHTML = `<div style="color:#2ecc71; font-size:13px; margin-top:10px;">🟢 المكالمة جارية</div>`;
         };
 
         const callBox = document.createElement('div');
@@ -6465,25 +6470,17 @@
         callBox.style.cssText = 'position:fixed; inset:0; background:#0d0221; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;';
         callBox.innerHTML = `
             <i class="fas fa-comment-medical" style="font-size:40px; color:var(--gold); margin-bottom:16px;"></i>
-            <div style="color:var(--gold); font-size:16px; margin-bottom:20px;">🟢 المكالمة جارية</div>
+            <div style="color:var(--gold); font-size:16px; margin-bottom:12px;">📞 جاري الاتصال بالصيدلية...</div>
+            <div style="background:rgba(231,76,60,0.1); border:1px solid #e74c3c; border-radius:10px; padding:8px 14px; margin-bottom:20px; font-size:10px; color:#e74c3c; max-width:280px; text-align:center;">
+                <i class="fas fa-circle" style="font-size:6px;"></i> هذه المكالمة مسجَّلة لدى شركة شاهين إكسبريس لأغراض الجودة والسلامة
+            </div>
             <audio id="customer-remote-audio" autoplay></audio>
-            <button onclick="_hangupCall('${orderId}')" style="width:60px; height:60px; border-radius:50%; background:#e74c3c; border:none; color:#fff; font-size:20px; margin-top:30px;"><i class="fas fa-phone-slash"></i></button>`;
+            <button onclick="_hangupCall('${orderId}')" style="width:60px; height:60px; border-radius:50%; background:#e74c3c; border:none; color:#fff; font-size:20px; margin-top:10px;"><i class="fas fa-phone-slash"></i></button>`;
         document.body.appendChild(callBox);
 
-        _customerPeerConnection.ontrack = (event) => {
-            document.getElementById('customer-remote-audio').srcObject = event.streams[0];
-        };
-
-        await _customerPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await _customerPeerConnection.createAnswer();
-        await _customerPeerConnection.setLocalDescription(answer);
-        _incomingCallChannel.send({ type: 'broadcast', event: 'answer', payload: { answer, from: 'customer' } });
-    }
-
-    function _declineIncomingCall(orderId) {
-        try { document.getElementById('searching-sound').pause(); } catch(e) {}
-        const overlay = document.getElementById('incoming-call-overlay');
-        if (overlay) overlay.remove();
+        const offer = await _customerPeerConnection.createOffer();
+        await _customerPeerConnection.setLocalDescription(offer);
+        _voiceSignalChannel.send({ type: 'broadcast', event: 'offer', payload: { offer, from: 'customer' } });
     }
 
     function _hangupCall(orderId) {
