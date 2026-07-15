@@ -4587,7 +4587,13 @@
             document.getElementById('consulting-status-text').innerText = "جاري طلب استشارة من " + ph.name + "... 🦅";
             document.getElementById('searching-sound').play();
             document.getElementById('eagle-consulting').style.display = 'flex';
-            
+
+            // [FEATURE-VOICE-REDESIGN] الاستشارة الصوتية: العميل ينتظر فقط (زي الكتابية بالضبط) —
+            // الصيدلي هو من يبدأ الاتصال فور قبوله، والعميل ينضم تلقائياً بدون أي زر من طرفه
+            if (_consultType === 'voice') {
+                _listenForPharmacyCall(orderId);
+            }
+
             // تشغيل الاستماع لتغيير الحالة
             listenConsultStatusOnly(orderId);
         } else {
@@ -6405,53 +6411,42 @@
                 }
             }).subscribe();
 
-        // [FEATURE-INCOMING-CALL] لو الاستشارة صوتية، نستمع لإشارة اتصال واردة من الصيدلي
+        // [FEATURE-VOICE-REDESIGN] لو الاستشارة صوتية، نتأكد الاستماع لمكالمة الصيدلي فعّال (احتياطي
+        // لحالات إعادة تحميل الصفحة، بما إنه الاستماع الأساسي يبدأ وقت الإرسال مباشرة)
         if (order.consultation_type === 'voice') {
-            _prepareCustomerCall(order.id);
+            _listenForPharmacyCall(order.id);
         }
     }
 
-    // [FIX-CALL-DIRECTION] العميل هو من يبدأ الاتصال، الصيدلي يرد — عكس التصميم الأول
+    // [FEATURE-VOICE-REDESIGN] الصيدلي هو من يبدأ الاتصال فور القبول، العميل ينضم تلقائياً
     let _voiceSignalChannel = null;
     let _customerPeerConnection = null;
     let _customerLocalStream = null;
-    function _prepareCustomerCall(orderId) {
-        console.log('[CALL-DEBUG] _prepareCustomerCall استُدعيت، orderId:', orderId);
+    function _listenForPharmacyCall(orderId) {
         if (_voiceSignalChannel) { try { _supabase.removeChannel(_voiceSignalChannel); } catch(e){} }
         _voiceSignalChannel = _supabase.channel('voice_signal_' + orderId)
-            .on('broadcast', { event: 'answer' }, async ({ payload }) => {
-                if (payload.from !== 'pharmacy' || !_customerPeerConnection) return;
-                await _customerPeerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
+            .on('broadcast', { event: 'offer' }, ({ payload }) => {
+                if (payload.from !== 'pharmacy') return;
+                _autoJoinPharmacyCall(orderId, payload.offer);
             })
             .on('broadcast', { event: 'ice-candidate' }, async ({ payload }) => {
                 if (payload.from !== 'pharmacy' || !_customerPeerConnection) return;
                 try { await _customerPeerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e) {}
             })
             .subscribe();
-        // إظهار زر الاتصال بشاشة الانتظار
-        const btnHolder = document.getElementById('consulting-call-btn-holder');
-        console.log('[CALL-DEBUG] btnHolder موجود؟', !!btnHolder);
-        if (btnHolder) {
-            btnHolder.style.display = 'block';
-            btnHolder.innerHTML = `<button onclick="_startCustomerCall('${orderId}')" style="width:70%; margin:14px auto 0; display:block; padding:12px; background:#2ecc71; color:#fff; border:none; border-radius:12px; font-weight:bold; cursor:pointer;"><i class="fas fa-phone"></i> اتصل بالصيدلية الآن</button>`;
-            console.log('[CALL-DEBUG] زر الاتصال أُضيف للشاشة');
-        } else {
-            console.error('[CALL-DEBUG] عنصر consulting-call-btn-holder غير موجود بالصفحة!');
-        }
     }
 
-    async function _startCustomerCall(orderId) {
-        console.log('[CALL-DEBUG] _startCustomerCall استُدعيت، orderId:', orderId);
+    // [FEATURE-VOICE-REDESIGN] انضمام تلقائي فوري للمكالمة فور وصول اتصال الصيدلي — بدون أي زر
+    async function _autoJoinPharmacyCall(orderId, offer) {
+        if (document.getElementById('active-call-box')) return; // مكالمة مفتوحة أصلاً
         try {
             _customerLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            console.log('[CALL-DEBUG] تم الحصول على إذن الميكروفون بنجاح');
         } catch(e) {
-            console.error('[CALL-DEBUG] فشل الحصول على إذن الميكروفون:', e);
-            showNotify('⚠️ يرجى السماح باستخدام الميكروفون لبدء الاتصال', 'error');
+            showNotify('⚠️ يرجى السماح باستخدام الميكروفون للرد على مكالمة الصيدلية', 'error');
             return;
         }
-        const btnHolder = document.getElementById('consulting-call-btn-holder');
-        if (btnHolder) btnHolder.innerHTML = `<div style="color:#2ecc71; font-size:12px; margin-top:10px;"><i class="fas fa-phone-volume"></i> جاري الاتصال بالصيدلية...</div>`;
+        try { document.getElementById('searching-sound').pause(); } catch(e) {}
+        document.getElementById('eagle-consulting').style.display = 'none';
 
         _customerPeerConnection = new RTCPeerConnection({
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }]
@@ -6460,17 +6455,13 @@
         _customerPeerConnection.onicecandidate = (event) => {
             if (event.candidate) _voiceSignalChannel.send({ type: 'broadcast', event: 'ice-candidate', payload: { candidate: event.candidate, from: 'customer' } });
         };
-        _customerPeerConnection.ontrack = (event) => {
-            document.getElementById('customer-remote-audio').srcObject = event.streams[0];
-            if (btnHolder) btnHolder.innerHTML = `<div style="color:#2ecc71; font-size:13px; margin-top:10px;">🟢 المكالمة جارية</div>`;
-        };
 
         const callBox = document.createElement('div');
         callBox.id = 'active-call-box';
         callBox.style.cssText = 'position:fixed; inset:0; background:#0d0221; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;';
         callBox.innerHTML = `
             <i class="fas fa-comment-medical" style="font-size:40px; color:var(--gold); margin-bottom:16px;"></i>
-            <div style="color:var(--gold); font-size:16px; margin-bottom:12px;">📞 جاري الاتصال بالصيدلية...</div>
+            <div style="color:var(--gold); font-size:16px; margin-bottom:12px;">🟢 المكالمة جارية مع الصيدلية</div>
             <div style="background:rgba(231,76,60,0.1); border:1px solid #e74c3c; border-radius:10px; padding:8px 14px; margin-bottom:20px; font-size:10px; color:#e74c3c; max-width:280px; text-align:center;">
                 <i class="fas fa-circle" style="font-size:6px;"></i> هذه المكالمة مسجَّلة لدى شركة شاهين إكسبريس لأغراض الجودة والسلامة
             </div>
@@ -6478,9 +6469,21 @@
             <button onclick="_hangupCall('${orderId}')" style="width:60px; height:60px; border-radius:50%; background:#e74c3c; border:none; color:#fff; font-size:20px; margin-top:10px;"><i class="fas fa-phone-slash"></i></button>`;
         document.body.appendChild(callBox);
 
-        const offer = await _customerPeerConnection.createOffer();
-        await _customerPeerConnection.setLocalDescription(offer);
-        _voiceSignalChannel.send({ type: 'broadcast', event: 'offer', payload: { offer, from: 'customer' } });
+        _customerPeerConnection.ontrack = (event) => {
+            const _custAudioEl = document.getElementById('customer-remote-audio');
+            _custAudioEl.srcObject = event.streams[0];
+            // [FIX-NO-AUDIO] بعض المتصفحات تمنع تشغيل الصوت تلقائياً حتى لو الاتصال نجح — نجبر
+            // التشغيل صراحة، ونطلب من العميل التفاعل يدوياً لو استمر المنع
+            _custAudioEl.play().catch(() => {
+                showNotify('⚠️ اضغط على الشاشة لتفعيل صوت المكالمة', 'error');
+                document.addEventListener('click', () => _custAudioEl.play().catch(()=>{}), { once: true });
+            });
+        };
+
+        await _customerPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await _customerPeerConnection.createAnswer();
+        await _customerPeerConnection.setLocalDescription(answer);
+        _voiceSignalChannel.send({ type: 'broadcast', event: 'answer', payload: { answer, from: 'customer' } });
     }
 
     function _hangupCall(orderId) {
