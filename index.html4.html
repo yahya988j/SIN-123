@@ -23,6 +23,142 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
 .app-screen { display: none; }
 .app-screen.active { display: block; }
 
+/* ===================== نظام تصميم رحال (Design Tokens) ===================== */
+:root {
+  --rk-green-900: #06382e;
+  --rk-green-800: #0B4B32;
+  --rk-green-700: #0d5c3c;
+  --rk-green-600: #0f6e48;
+  --rk-green-hover: #094228;
+  --rk-green-soft: #EAF4EF;
+  --rk-gold: #AB7E4A;
+  --rk-gold-soft: #F7F2EA;
+  --rk-ink: #161616;
+  --rk-body: #4A4A4A;
+  --rk-muted: #8B8B8B;
+  --rk-border: #ECEBE8;
+  --rk-bg: #F4F5F3;
+  --rk-white: #FFFFFF;
+  --rk-danger: #C23B3B;
+  --rk-danger-soft: #FBEAEA;
+  --rk-warn: #B3811B;
+  --rk-warn-soft: #FDF2DC;
+  --rk-r-sm: 10px;
+  --rk-r-md: 14px;
+  --rk-r-lg: 18px;
+  --rk-r-xl: 24px;
+  --rk-r-pill: 999px;
+  --rk-shadow-sm: 0 2px 8px rgba(11,75,50,0.06);
+  --rk-shadow-md: 0 6px 20px rgba(11,75,50,0.10);
+  --rk-shadow-lg: 0 14px 40px rgba(11,75,50,0.16);
+  --rk-font: 'Cairo', sans-serif;
+}
+
+/* ---------- نظام الأزرار الموحّد ---------- */
+.rk-btn {
+  --btn-h: 50px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: var(--btn-h);
+  padding: 0 18px;
+  border-radius: var(--rk-r-md);
+  font-family: var(--rk-font);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease, filter .18s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.rk-btn:active { transform: scale(0.98); }
+.rk-btn i, .rk-btn svg { font-size: 1.05em; flex-shrink: 0; }
+
+.rk-btn-primary {
+  background: linear-gradient(135deg, var(--rk-green-600), var(--rk-green-900));
+  color: #fff;
+  box-shadow: var(--rk-shadow-md);
+}
+.rk-btn-primary:hover:not(:disabled) { filter: brightness(1.05); box-shadow: var(--rk-shadow-lg); }
+
+.rk-btn-secondary {
+  background: var(--rk-gold-soft);
+  color: var(--rk-gold);
+  box-shadow: none;
+}
+.rk-btn-secondary:hover:not(:disabled) { background: #F0E7D6; }
+
+.rk-btn-outline {
+  background: #fff;
+  color: var(--rk-green-800);
+  border: 1.5px solid var(--rk-border);
+}
+.rk-btn-outline:hover:not(:disabled) { border-color: var(--rk-green-800); background: var(--rk-green-soft); }
+
+.rk-btn-danger-outline {
+  background: #fff;
+  color: var(--rk-danger);
+  border: 1.5px solid #F1D4D4;
+}
+.rk-btn-danger-outline:hover:not(:disabled) { background: var(--rk-danger-soft); }
+
+.rk-btn-icon {
+  width: var(--btn-h);
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rk-btn:disabled { opacity: .55; cursor: not-allowed; filter: none; box-shadow: none; transform: none; }
+
+.rk-btn .rk-btn-label, .rk-btn .rk-btn-spinner { display: inline-flex; align-items: center; gap: 8px; }
+.rk-btn-spinner { display: none; }
+.rk-btn-spinner::before {
+  content: '';
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: rh-spin .7s linear infinite;
+}
+.rk-btn-outline .rk-btn-spinner::before, .rk-btn-secondary .rk-btn-spinner::before {
+  border: 2.5px solid rgba(11,75,50,.25);
+  border-top-color: var(--rk-green-800);
+}
+.rk-btn.is-loading { pointer-events: none; }
+.rk-btn.is-loading .rk-btn-label { display: none; }
+.rk-btn.is-loading .rk-btn-spinner { display: inline-flex; }
+.rk-btn.is-success { background: var(--rk-green-hover); }
+.rk-btn.is-success .rk-btn-label::before { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-left: 6px; }
+
+/* ---------- نظام البطاقات الموحّد ---------- */
+.rk-card {
+  background: #fff;
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-r-lg);
+  box-shadow: var(--rk-shadow-sm);
+}
+.rk-card-pad { padding: 16px; }
+
+/* ---------- حالة فارغة ---------- */
+.rk-empty {
+  text-align: center;
+  padding: 46px 20px;
+  color: var(--rk-muted);
+}
+.rk-empty i { font-size: 34px; color: #D8D8D8; margin-bottom: 12px; display: block; }
+.rk-empty-title { font-size: 14px; font-weight: 700; color: #777; margin-bottom: 4px; }
+.rk-empty-sub { font-size: 12px; color: #aaa; }
+
+/* ---------- Skeleton loading ---------- */
+.rk-skeleton { background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%); background-size: 400% 100%; animation: rk-shimmer 1.4s ease infinite; border-radius: 10px; }
+@keyframes rk-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+/* ---------- Toast (نظام حالات) ---------- */
 #globalToast {
   position: fixed;
   bottom: 24px;
@@ -30,18 +166,30 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
   transform: translateX(-50%) translateY(20px);
   background: #1B1B1B;
   color: #fff;
-  padding: 10px 18px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: var(--rk-r-md);
   font-size: 13px;
-  font-family: 'Cairo', sans-serif;
+  font-family: var(--rk-font);
+  font-weight: 600;
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s, transform .25s;
   z-index: 9999;
   text-align: center;
   max-width: 90%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
 #globalToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#globalToast .toast-icon { font-size: 15px; flex-shrink: 0; }
+#globalToast.toast-success { background: var(--rk-green-900); }
+#globalToast.toast-success .toast-icon { color: #6fd9a8; }
+#globalToast.toast-error { background: #3a1414; }
+#globalToast.toast-error .toast-icon { color: #ff8080; }
+#globalToast.toast-info { background: #1B1B1B; }
+#globalToast.toast-info .toast-icon { color: #AB7E4A; }
 
 #globalLoading {
   display: none;
@@ -61,6 +209,255 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
   animation: rh-spin .8s linear infinite;
 }
 @keyframes rh-spin { to { transform: rotate(360deg); } }
+
+/* ===================== شاشة الحساب / حجوزاتي / الشركات ===================== */
+.rk-sub-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 16px 10px;
+}
+.rk-sub-back {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: #F2F2F2; color: #333; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.rk-sub-back:hover { background: #E8E8E8; }
+.rk-sub-title { font-size: 18px; font-weight: 800; color: var(--rk-ink); }
+
+.rk-profile-card {
+  margin: 4px 16px 14px;
+  padding: 20px 16px;
+  border-radius: var(--rk-r-xl);
+  background: linear-gradient(135deg, var(--rk-green-700), var(--rk-green-900));
+  color: #fff;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--rk-shadow-md);
+}
+.rk-profile-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; flex-shrink: 0;
+}
+.rk-profile-info { min-width: 0; flex: 1; }
+.rk-profile-name { font-size: 16px; font-weight: 800; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-profile-sub { font-size: 12px; color: #cfe3da; direction: ltr; text-align: right; }
+
+.rk-wallet-card {
+  margin: 0 16px 14px;
+  padding: 18px 16px;
+  border-radius: var(--rk-r-lg);
+  background: #fff;
+  border: 1px solid var(--rk-border);
+  box-shadow: var(--rk-shadow-sm);
+}
+.rk-wallet-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.rk-wallet-label { font-size: 12px; color: var(--rk-muted); font-weight: 700; margin-bottom: 4px; }
+.rk-wallet-value { font-size: 26px; font-weight: 800; color: var(--rk-green-800); }
+.rk-wallet-icon { width: 38px; height: 38px; border-radius: 50%; background: var(--rk-gold-soft); color: var(--rk-gold); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+
+.rk-section-title { font-size: 13.5px; font-weight: 800; color: var(--rk-ink); margin: 18px 16px 8px; }
+
+/* ---------- شاشة حسابي: تخطيط يملأ الشاشة ولا يترك فراغاً على الديسكتوب ---------- */
+.rk-account-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "profile" "wallet" "txtitle" "txlist" "links" "logout";
+  gap: 0;
+}
+.rk-account-side-links { grid-area: links; display: flex; flex-direction: column; gap: 8px; padding: 4px 16px 4px; }
+.rk-account-side-link {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: right;
+  background: #fff; border: 1px solid var(--rk-border); border-radius: var(--rk-r-md);
+  padding: 13px 14px; font-family: var(--rk-font); font-size: 13.5px; font-weight: 700; color: var(--rk-ink);
+  cursor: pointer;
+}
+.rk-account-side-link i:first-child { color: var(--rk-green-800); width: 16px; }
+.rk-account-side-link i:last-child { margin-right: auto; color: var(--rk-muted); font-size: 11px; }
+.rk-account-side-link:hover { border-color: var(--rk-green-800); }
+@media (min-width: 900px) {
+  .rk-account-layout {
+    grid-template-columns: 320px 1fr;
+    grid-template-areas: "profile wallet" "links txtitle" "logout txlist";
+    gap: 20px 24px;
+    align-items: start;
+    padding-top: 10px;
+  }
+  .rk-account-layout .rk-profile-card,
+  .rk-account-layout .rk-wallet-card { margin: 0; }
+  .rk-account-layout .rk-profile-card { flex-direction: column; text-align: center; padding: 30px 22px; gap: 14px; }
+  .rk-account-layout .rk-profile-avatar { width: 68px; height: 68px; font-size: 26px; }
+  .rk-account-layout .rk-wallet-card { padding: 26px 24px; }
+  .rk-account-layout .rk-wallet-value { font-size: 32px; }
+  .rk-account-layout .rk-section-title { margin: 0 0 8px; }
+  .rk-account-layout #acctTxList { margin: 0 !important; }
+  .rk-account-side-links { padding: 0; align-self: start; }
+  .rk-account-layout > div[style*="grid-area:logout"] { padding: 0 !important; align-self: start; }
+}
+
+.rk-tx-row { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #F4F4F3; }
+.rk-tx-row:last-child { border-bottom: none; }
+.rk-tx-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.rk-tx-icon.credit { background: var(--rk-green-soft); color: var(--rk-green-800); }
+.rk-tx-icon.debit { background: var(--rk-danger-soft); color: var(--rk-danger); }
+.rk-tx-info { flex: 1; min-width: 0; }
+.rk-tx-desc { font-size: 13px; font-weight: 700; color: var(--rk-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-tx-date { font-size: 11px; color: var(--rk-muted); margin-top: 2px; }
+.rk-tx-amount { font-size: 13.5px; font-weight: 800; flex-shrink: 0; direction: ltr; }
+.rk-tx-amount.credit { color: var(--rk-green-800); }
+.rk-tx-amount.debit { color: var(--rk-danger); }
+
+.rk-booking-card { margin: 0 16px 12px; padding: 14px; }
+.rk-booking-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.rk-booking-number { font-size: 11.5px; color: var(--rk-muted); font-weight: 600; direction: ltr; text-align: right; }
+.rk-status-pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: var(--rk-r-pill); }
+.rk-status-pill.confirmed { background: var(--rk-green-soft); color: var(--rk-green-800); }
+.rk-status-pill.pending { background: var(--rk-warn-soft); color: var(--rk-warn); }
+.rk-status-pill.cancelled { background: var(--rk-danger-soft); color: var(--rk-danger); }
+.rk-booking-route { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14.5px; font-weight: 800; color: var(--rk-ink); margin-bottom: 10px; }
+.rk-booking-route i { color: var(--rk-gold); font-size: 11px; }
+.rk-booking-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed var(--rk-border); }
+.rk-booking-meta-item { text-align: center; flex: 1; }
+.rk-booking-meta-label { font-size: 10.5px; color: var(--rk-muted); margin-bottom: 2px; }
+.rk-booking-meta-value { font-size: 12.5px; font-weight: 700; color: var(--rk-ink); }
+.rk-booking-actions { margin-top: 12px; display: flex; gap: 8px; }
+.rk-booking-actions .rk-btn { height: 40px; font-size: 13px; }
+
+.rk-company-card { margin: 0 16px 12px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+.rk-company-logo { width: 48px; height: 48px; border-radius: 14px; object-fit: cover; flex-shrink: 0; background: var(--rk-gold-soft); }
+.rk-company-logo-fallback { display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: var(--rk-gold); }
+.rk-company-info { flex: 1; min-width: 0; }
+.rk-company-name { font-size: 14.5px; font-weight: 800; color: var(--rk-ink); margin-bottom: 3px; }
+.rk-company-meta { font-size: 11.5px; color: var(--rk-muted); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rk-company-meta i { color: var(--rk-gold); margin-left: 3px; }
+
+/* ===================== App Shell — Web App حقيقي بدون إطار هاتف ===================== */
+.rk-shell { min-height: 100vh; display: flex; flex-direction: column; background: var(--rk-bg); width: 100%; }
+
+.rk-topbar {
+  position: sticky; top: 0; z-index: 60;
+  background: rgba(255,255,255,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rk-border);
+}
+.rk-topbar-inner {
+  max-width: 1240px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 20px; gap: 16px;
+}
+.rk-topbar-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 19px; color: var(--rk-green-800); cursor: pointer; white-space: nowrap; background: none; border: none; font-family: var(--rk-font); }
+.rk-topbar-logo i { font-size: 21px; }
+.rk-topbar-nav { display: none; align-items: center; gap: 2px; }
+.rk-topbar-nav .rk-nav-link {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: var(--rk-r-pill);
+  font-size: 13.5px; font-weight: 700; color: var(--rk-body);
+  cursor: pointer; border: none; background: none; font-family: var(--rk-font);
+  transition: all .15s;
+}
+.rk-topbar-nav .rk-nav-link:hover { background: var(--rk-green-soft); color: var(--rk-green-800); }
+.rk-topbar-nav .rk-nav-link.active { background: var(--rk-green-800); color: #fff; }
+.rk-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.rk-topbar-back {
+  width: 38px; height: 38px; border-radius: 50%; border: none;
+  background: #F2F2F2; color: #333; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.rk-topbar-back:hover { background: #E8E8E8; }
+.rk-topbar-title { font-size: 15.5px; font-weight: 800; color: var(--rk-ink); }
+.rk-topbar-wallet-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--rk-green-soft); color: var(--rk-green-800);
+  padding: 8px 14px; border-radius: var(--rk-r-pill);
+  font-size: 13px; font-weight: 800; cursor: pointer; border: none; font-family: var(--rk-font);
+}
+
+.rk-main { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; box-sizing: border-box; padding: 20px 16px 100px; }
+.rk-main-narrow { max-width: 640px; }
+.rk-main-wide { max-width: 1240px; }
+
+.rk-bottom-tabs {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+  background: #fff; border-top: 1px solid var(--rk-border);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 7px 6px calc(7px + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 16px rgba(0,0,0,.05);
+}
+.rk-bottom-tabs .nav-item { flex: 1; max-width: 100px; }
+
+@media (min-width: 900px) {
+  .rk-topbar-nav { display: flex; }
+  .rk-bottom-tabs { display: none; }
+  .rk-main { padding: 28px 32px 56px; }
+}
+
+/* ---------- عناصر إدخال موحّدة (Inputs) ---------- */
+.rk-field-label { font-size: 12.5px; font-weight: 700; color: var(--rk-body); display: block; }
+.rk-input {
+  width: 100%; height: 46px; border: 1.5px solid var(--rk-border); border-radius: var(--rk-r-md);
+  padding: 0 14px; font-family: var(--rk-font); font-size: 14px; color: var(--rk-ink);
+  background: #fff; transition: border-color .15s;
+}
+.rk-input:focus { outline: none; border-color: var(--rk-green-800); }
+.rk-input::placeholder { color: #B5B5B5; }
+
+/* ---------- تبويبات فلترة (حجوزاتي) ---------- */
+.rk-filter-tabs { display: flex; gap: 8px; padding: 4px 16px 0; overflow-x: auto; }
+.rk-filter-tab {
+  flex-shrink: 0; padding: 8px 16px; border-radius: var(--rk-r-pill); border: 1.5px solid var(--rk-border);
+  background: #fff; font-family: var(--rk-font); font-size: 12.5px; font-weight: 700; color: var(--rk-body); cursor: pointer;
+}
+.rk-filter-tab.active { background: var(--rk-green-800); color: #fff; border-color: var(--rk-green-800); }
+
+/* ---------- شبكة الشركات على الشاشات الواسعة ---------- */
+@media (min-width: 900px) {
+  .rk-companies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; padding: 10px 8px 30px; }
+  .rk-company-card { margin: 0; }
+  #bookingsList { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; padding: 0 8px 30px; align-content: start; }
+  .rk-booking-card { margin: 0; }
+}
+
+/* ---------- تخطيط شاشة الدفع (مراجعة + طرق الدفع) ---------- */
+.rk-pay-layout { display: block; }
+.rk-pay-col-summary, .rk-pay-col-methods { max-width: 560px; margin: 0 auto; }
+@media (min-width: 960px) {
+  .rk-pay-layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; align-items: start; max-width: 1000px; margin: 0 auto; }
+  .rk-pay-col-summary { position: sticky; top: 88px; max-width: none; }
+  .rk-pay-col-methods { max-width: none; }
+}
+
+/* ---------- تخطيط شاشة بيانات المسافرين ---------- */
+.rk-pinfo-layout { display: block; }
+.rk-pinfo-col-summary, .rk-pinfo-col-form { max-width: 560px; margin: 0 auto; }
+.rk-pinfo-col-summary { margin-bottom: 14px; }
+@media (min-width: 960px) {
+  .rk-pinfo-layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; align-items: start; max-width: 1000px; margin: 0 auto; }
+  .rk-pinfo-col-summary { position: sticky; top: 88px; max-width: none; margin-bottom: 0; }
+  .rk-pinfo-col-form { max-width: none; }
+}
+
+/* ---------- تخطيط شاشة اختيار المقعد ----------
+   ملاحظة مهمة: .viewport يعتمد على height:100% لينتقل الارتفاع إلى .zoom-wrap
+   ثم .seatmap-frame (aspect-ratio) — لذلك يحتاج والده هنا ارتفاعاً محدداً فعلياً
+   (وليس min-height فقط) حتى تعمل نسبة 100% بشكل صحيح بلا إطار هاتف. */
+.rk-seats-layout { display: flex; flex-direction: column; gap: 16px; padding: 14px; box-sizing: border-box; }
+.rk-seats-layout .viewport { width: 100%; height: min(68vh, 620px); min-height: 380px; flex: none; }
+.rk-seats-side {
+  background: #fff; border: 1px solid var(--rk-border); border-radius: var(--rk-r-lg);
+  padding: 16px; box-shadow: var(--rk-shadow-sm);
+}
+.rk-seats-side-title { font-size: 13.5px; font-weight: 800; color: var(--rk-ink); margin-bottom: 10px; }
+.rk-seats-side-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; color: var(--rk-body); border-bottom: 1px dashed var(--rk-border); }
+.rk-seats-side-row:last-of-type { border-bottom: none; }
+.rk-seats-side-row strong { color: var(--rk-ink); }
+@media (min-width: 960px) {
+  .rk-seats-layout { flex-direction: row; align-items: flex-start; padding: 20px; }
+  .rk-seats-layout .viewport { flex: 1 1 66%; width: auto; height: calc(100vh - 120px); max-height: 820px; min-height: 480px; }
+  .rk-seats-side { flex: 0 0 300px; align-self: flex-start; position: sticky; top: 88px; }
+}
+
+/* شاشات التدفّق (دخول / مقاعد / دفع / تذكرة) — شريط علوي بسيط بلا تبويبات أسفل */
+.rk-flow-shell { min-height: 100vh; display: flex; flex-direction: column; background: var(--rk-bg); }
+.rk-flow-main { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; box-sizing: border-box; padding: 24px 16px 48px; }
+@media (min-width: 900px) { .rk-flow-main { padding: 32px 32px 56px; } }
 
 /* ===================== شاشة الدفع ===================== */
 #screen-payment.active, #screen-ticket.active { width: 100%; }
@@ -252,15 +649,40 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
     display:flex;
     justify-content:center;
     min-height:100vh;
-    padding:24px 0;
+    padding:0;
   }
   .auth-frame{
     width:100%;
-    max-width:390px;
+    max-width:480px;
     background:var(--bg);
-    box-shadow:0 0 40px rgba(0,0,0,.06);
-    overflow:hidden;
+    box-shadow:none;
+    overflow:visible;
     position:relative;
+  }
+  /* Web App حقيقي: على الشاشات الكبيرة تصبح شاشة الدخول Split-Screen يملأ الشاشة بالكامل حافة لحافة —
+     بدون بطاقة عائمة في مساحة بيضاء، البرنامج نفسه = الشاشة حتى على الديسكتوب */
+  @media (min-width:960px){
+    #screen-auth.active{ align-items:stretch; padding:0; }
+    .auth-frame{
+      max-width:none;
+      width:100%;
+      min-height:100vh;
+      display:grid;
+      grid-template-columns: 1.05fr 1fr;
+      align-items:stretch;
+      gap:0;
+    }
+    .auth-hero{ border-radius:0; overflow:hidden; box-shadow:none; height:100%; }
+    .auth-hero img{ height:100%; object-fit:cover; object-position:center 78%; }
+    .card{
+      border-radius:0 !important; box-shadow:none !important; border:none; background:#fff;
+      padding:0 15% !important; display:flex; flex-direction:column; justify-content:center;
+      min-height:100vh; text-align:center;
+    }
+    .bottom-graphic{ display:none; }
+  }
+  @media (min-width:1400px){
+    .card{ padding:0 19% !important; }
   }
 
   /* ---------- HERO (صورة أصلية غير معدّلة) ---------- */
@@ -486,14 +908,9 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
 /* ===================== شاشة الرئيسية والبحث ===================== */
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-#screen-home.active, #screen-seats.active, #screen-payment.active, #screen-ticket.active {
+#screen-home.active, #screen-seats.active, #screen-payment.active, #screen-ticket.active,
+#screen-account.active, #screen-bookings.active, #screen-companies.active {
   font-family: 'Cairo', sans-serif;
-  background: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
 }
 
 /* Phone Frame */
@@ -558,12 +975,44 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
 /* Scrollable Content */
 .scroll-container {
   width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1;
   position: relative;
   background: #f8f9fa;
   padding-bottom: 90px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+@media (min-width: 900px) { .scroll-container { padding-bottom: 40px; } }
+
+/* شريط الثقة/الخدمة على الرئيسية */
+.rk-trust-row { display: flex; gap: 8px; padding: 4px 14px 18px; overflow-x: auto; }
+.rk-trust-item {
+  flex: 1 1 auto; min-width: 130px; display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid var(--rk-border); border-radius: var(--rk-r-md);
+  padding: 10px 12px; font-size: 11.5px; font-weight: 700; color: var(--rk-body); white-space: nowrap;
+}
+.rk-trust-item i { color: var(--rk-green-800); font-size: 15px; }
+
+@media (min-width: 900px) {
+  .scroll-container { max-width: 1000px; }
+  .hero { max-height: 340px; overflow: hidden; border-radius: 0 0 28px 28px; }
+  .hero img { height: 100%; object-fit: cover; object-position: center 32%; }
+  .main-card {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px;
+    border-radius: 22px; box-shadow: var(--rk-shadow-lg);
+    margin: -44px 14px 0; position: relative; z-index: 20;
+    padding: 22px 26px;
+  }
+  .from-to-labels { display: none; }
+  .from-to-row { flex: 1 1 280px; margin-bottom: 0; }
+  .cities-row { flex: 1 1 260px; margin-bottom: 0; }
+  .counters-row { flex: 1 1 240px; margin-bottom: 0; }
+  .date-box { flex: 1 1 200px; margin-bottom: 0; }
+  .search-btn { flex: 0 0 auto; width: auto; padding: 14px 34px; }
+  .rk-trust-row { padding: 22px 14px 6px; overflow-x: visible; }
+  .trips-section { padding: 20px 14px 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px; align-items: start; }
+  .trips-section .trips-header { grid-column: 1 / -1; }
+  .trip-card { margin-bottom: 0; }
 }
 .scroll-container::-webkit-scrollbar { display: none; }
 
@@ -1218,20 +1667,8 @@ body { font-family: 'Cairo', sans-serif; background: #F4F5F3; }
   border-top: 1px solid #f0f0f0;
 }
 
-@media (max-width: 450px) {
-  #screen-home.active, #screen-seats.active, #screen-payment.active, #screen-ticket.active { padding: 0; background: #fff; }
-  .phone-frame { width: 100vw; height: 100vh; border-radius: 0; padding: 0; box-shadow: none; }
-  .phone-frame::before { display: none; }
-  .side-btn { display: none; }
-  .phone-screen { border-radius: 0; }
-  .status-bar { padding-top: 6px; position: relative; }
-
-  /* الدفع والتذكرة محتواهما طويل بطبيعته (إيصال/فاتورة) — على الجوال الحقيقي
-     يجب أن يمرّر الصفحة كلها بشكل طبيعي بدل تحديدها بارتفاع شاشة واحدة وتمرير
-     داخلي منفصل (وهذا هو المقصود بـ"شاشة جوال طبيعي" وليس إطار هاتف مصغّر). */
-  #screen-payment .phone-frame, #screen-ticket .phone-frame { height: auto; min-height: 100vh; }
-  #screen-payment .phone-screen, #screen-ticket .phone-screen { height: auto; overflow-y: visible; }
-}
+/* ملاحظة: تمت إزالة إطار الهاتف (phone-frame) نهائياً — التطبيق الآن Web App حقيقي
+   يستخدم كامل عرض الشاشة على كل الأجهزة عبر .rk-shell / .rk-flow-shell أعلاه. */
 
 /* ===================== شاشة اختيار المقعد ===================== */
 
@@ -1667,23 +2104,22 @@ svg.rt-icon { display:inline-block; }
 
 <!-- ============ شاشة الرئيسية: البحث والرحلات ============ -->
 <div class="app-screen" id="screen-home">
-<div class="phone-frame">
-  <div class="side-btn btn-power"></div>
-  <div class="side-btn btn-vol-up"></div>
-  <div class="side-btn btn-vol-down"></div>
-
-  <div class="phone-screen">
-    <div class="scroll-container">
-
-      <!-- Status Bar -->
-      <div class="status-bar">
-        <div class="status-left">9:41</div>
-        <div class="status-right">
-          <i class="fas fa-signal"></i>
-          <i class="fas fa-wifi"></i>
-          <i class="fas fa-battery-full"></i>
-        </div>
+<div class="rk-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button type="button" class="rk-topbar-logo" onclick="setNav(null,'home')"><i class="fas fa-bus"></i> رحال</button>
+      <nav class="rk-topbar-nav">
+        <button class="rk-nav-link active" onclick="setNav(this,'home')"><i class="fas fa-magnifying-glass"></i> البحث عن رحلة</button>
+        <button class="rk-nav-link" onclick="setNav(this,'bookings')"><i class="fas fa-ticket"></i> حجوزاتي</button>
+        <button class="rk-nav-link" onclick="setNav(this,'companies')"><i class="fas fa-building"></i> شركات النقل</button>
+      </nav>
+      <div class="rk-topbar-actions">
+        <button class="rk-topbar-wallet-chip" onclick="setNav(null,'account')"><i class="fas fa-wallet"></i> حسابي</button>
       </div>
+    </div>
+  </header>
+
+  <div class="scroll-container">
 
       <!-- Hero: الصورة الأصلية الخاصة برحال كما هي -->
       <div class="hero">
@@ -1767,6 +2203,13 @@ svg.rt-icon { display:inline-block; }
         </button>
       </div>
 
+      <!-- Trust / Service info -->
+      <div class="rk-trust-row">
+        <div class="rk-trust-item"><i class="fas fa-shield-halved"></i><span>دفع آمن وموثوق</span></div>
+        <div class="rk-trust-item"><i class="fas fa-headset"></i><span>دعم على مدار الساعة</span></div>
+        <div class="rk-trust-item"><i class="fas fa-bus"></i><span>شركات نقل معتمدة</span></div>
+        <div class="rk-trust-item"><i class="fas fa-ticket"></i><span>تذكرة إلكترونية فورية</span></div>
+      </div>
 
             <!-- Trips Section -->
       <div class="trips-section">
@@ -1790,28 +2233,28 @@ svg.rt-icon { display:inline-block; }
       </div>
 
 
-    </div>
-
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-      <button class="nav-item" onclick="setNav(this, 'account')">
-        <i class="far fa-user"></i>
-        <span>حسابي</span>
-      </button>
-      <button class="nav-item" onclick="setNav(this, 'bookings')">
-        <i class="fas fa-ticket-alt"></i>
-        <span>حجوزاتي</span>
-      </button>
-      <button class="nav-item active" onclick="setNav(this, 'home')">
-        <i class="fas fa-bus"></i>
-        <span>الرئيسية</span>
-      </button>
-      <button class="nav-item" onclick="setNav(this, 'companies')">
-        <i class="far fa-building"></i>
-        <span>الشركات</span>
-      </button>
-    </div>
   </div>
+
+  <!-- Bottom Tabs (Mobile only) -->
+  <nav class="rk-bottom-tabs">
+    <button class="nav-item" onclick="setNav(this, 'account')">
+      <i class="far fa-user"></i>
+      <span>حسابي</span>
+    </button>
+    <button class="nav-item" onclick="setNav(this, 'bookings')">
+      <i class="fas fa-ticket-alt"></i>
+      <span>حجوزاتي</span>
+    </button>
+    <button class="nav-item active" onclick="setNav(this, 'home')">
+      <i class="fas fa-bus"></i>
+      <span>الرئيسية</span>
+    </button>
+    <button class="nav-item" onclick="setNav(this, 'companies')">
+      <i class="far fa-building"></i>
+      <span>الشركات</span>
+    </button>
+  </nav>
+</div>
 </div>
 
 <div class="modal-overlay" id="countryModal" onclick="closeModal(event)">
@@ -1866,16 +2309,173 @@ svg.rt-icon { display:inline-block; }
   </div>
 </div>
 
+<!-- ============ شاشة حسابي ============ -->
+<div class="app-screen" id="screen-account">
+<div class="rk-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button type="button" class="rk-topbar-logo" onclick="setNav(null,'home')"><i class="fas fa-bus"></i> رحال</button>
+      <nav class="rk-topbar-nav">
+        <button class="rk-nav-link" onclick="setNav(this,'home')"><i class="fas fa-magnifying-glass"></i> البحث عن رحلة</button>
+        <button class="rk-nav-link" onclick="setNav(this,'bookings')"><i class="fas fa-ticket"></i> حجوزاتي</button>
+        <button class="rk-nav-link" onclick="setNav(this,'companies')"><i class="fas fa-building"></i> شركات النقل</button>
+      </nav>
+      <div class="rk-topbar-actions"><span class="rk-topbar-title">حسابي</span></div>
+    </div>
+  </header>
+  <div class="scroll-container">
+      <div class="rk-account-layout">
+        <div class="rk-profile-card" style="grid-area:profile;">
+          <div class="rk-profile-avatar" id="acctAvatar">ر</div>
+          <div class="rk-profile-info">
+            <div class="rk-profile-name" id="acctName">—</div>
+            <div class="rk-profile-sub" id="acctSub">—</div>
+          </div>
+        </div>
 
+        <div class="rk-wallet-card" style="grid-area:wallet;">
+          <div class="rk-wallet-top">
+            <div>
+              <div class="rk-wallet-label">رصيد المحفظة</div>
+              <div class="rk-wallet-value" id="acctBalance">0 ر.س</div>
+            </div>
+            <div class="rk-wallet-icon"><i class="fas fa-wallet"></i></div>
+          </div>
+        </div>
+
+        <div class="rk-section-title" style="grid-area:txtitle;">آخر عمليات المحفظة</div>
+        <div class="rk-card" style="grid-area:txlist; margin:0 16px 14px;" id="acctTxList"></div>
+
+        <div class="rk-account-side-links" style="grid-area:links;">
+          <button class="rk-account-side-link" onclick="setNav(null,'bookings')"><i class="fas fa-ticket"></i> حجوزاتي<i class="fas fa-chevron-left"></i></button>
+          <button class="rk-account-side-link" onclick="setNav(null,'companies')"><i class="fas fa-building"></i> شركات النقل<i class="fas fa-chevron-left"></i></button>
+        </div>
+
+        <div style="grid-area:logout; padding:0 16px 24px;">
+          <button class="rk-btn rk-btn-danger-outline" onclick="accountLogout()">
+            <span class="rk-btn-label"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</span>
+            <span class="rk-btn-spinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="rk-bottom-tabs">
+      <button class="nav-item active" onclick="setNav(this, 'account')">
+        <i class="fas fa-user"></i>
+        <span>حسابي</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'bookings')">
+        <i class="fas fa-ticket-alt"></i>
+        <span>حجوزاتي</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'home')">
+        <i class="fas fa-bus"></i>
+        <span>الرئيسية</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'companies')">
+        <i class="far fa-building"></i>
+        <span>الشركات</span>
+      </button>
+    </nav>
+</div>
+</div>
+
+<!-- ============ شاشة حجوزاتي ============ -->
+<div class="app-screen" id="screen-bookings">
+<div class="rk-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button type="button" class="rk-topbar-logo" onclick="setNav(null,'home')"><i class="fas fa-bus"></i> رحال</button>
+      <nav class="rk-topbar-nav">
+        <button class="rk-nav-link" onclick="setNav(this,'home')"><i class="fas fa-magnifying-glass"></i> البحث عن رحلة</button>
+        <button class="rk-nav-link active" onclick="setNav(this,'bookings')"><i class="fas fa-ticket"></i> حجوزاتي</button>
+        <button class="rk-nav-link" onclick="setNav(this,'companies')"><i class="fas fa-building"></i> شركات النقل</button>
+      </nav>
+      <div class="rk-topbar-actions"><span class="rk-topbar-title">حجوزاتي</span></div>
+    </div>
+  </header>
+  <div class="scroll-container">
+      <div id="bookingsFilterTabs" class="rk-filter-tabs">
+        <button class="rk-filter-tab active" data-filter="all" onclick="setBookingsFilter('all', this)">الكل</button>
+        <button class="rk-filter-tab" data-filter="upcoming" onclick="setBookingsFilter('upcoming', this)">القادمة</button>
+        <button class="rk-filter-tab" data-filter="past" onclick="setBookingsFilter('past', this)">السابقة</button>
+        <button class="rk-filter-tab" data-filter="cancelled" onclick="setBookingsFilter('cancelled', this)">الملغاة</button>
+      </div>
+      <div id="bookingsList" style="padding-top:10px;"></div>
+    </div>
+
+    <nav class="rk-bottom-tabs">
+      <button class="nav-item" onclick="setNav(this, 'account')">
+        <i class="far fa-user"></i>
+        <span>حسابي</span>
+      </button>
+      <button class="nav-item active" onclick="setNav(this, 'bookings')">
+        <i class="fas fa-ticket-alt"></i>
+        <span>حجوزاتي</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'home')">
+        <i class="fas fa-bus"></i>
+        <span>الرئيسية</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'companies')">
+        <i class="far fa-building"></i>
+        <span>الشركات</span>
+      </button>
+    </nav>
+</div>
+</div>
+
+<!-- ============ شاشة شركات النقل ============ -->
+<div class="app-screen" id="screen-companies">
+<div class="rk-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button type="button" class="rk-topbar-logo" onclick="setNav(null,'home')"><i class="fas fa-bus"></i> رحال</button>
+      <nav class="rk-topbar-nav">
+        <button class="rk-nav-link" onclick="setNav(this,'home')"><i class="fas fa-magnifying-glass"></i> البحث عن رحلة</button>
+        <button class="rk-nav-link" onclick="setNav(this,'bookings')"><i class="fas fa-ticket"></i> حجوزاتي</button>
+        <button class="rk-nav-link active" onclick="setNav(this,'companies')"><i class="fas fa-building"></i> شركات النقل</button>
+      </nav>
+      <div class="rk-topbar-actions"><span class="rk-topbar-title">شركات النقل</span></div>
+    </div>
+  </header>
+  <div class="scroll-container">
+      <div id="companiesList" class="rk-companies-grid" style="padding-top:10px;"></div>
+    </div>
+
+    <nav class="rk-bottom-tabs">
+      <button class="nav-item" onclick="setNav(this, 'account')">
+        <i class="far fa-user"></i>
+        <span>حسابي</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'bookings')">
+        <i class="fas fa-ticket-alt"></i>
+        <span>حجوزاتي</span>
+      </button>
+      <button class="nav-item" onclick="setNav(this, 'home')">
+        <i class="fas fa-bus"></i>
+        <span>الرئيسية</span>
+      </button>
+      <button class="nav-item active" onclick="setNav(this, 'companies')">
+        <i class="fas fa-building"></i>
+        <span>الشركات</span>
+      </button>
+    </nav>
+</div>
 </div>
 
 <!-- ============ شاشة اختيار المقعد ============ -->
 <div class="app-screen" id="screen-seats">
-<div class="phone-frame">
-  <div class="side-btn btn-power"></div>
-  <div class="side-btn btn-vol-up"></div>
-  <div class="side-btn btn-vol-down"></div>
-  <div class="phone-screen">
+<div class="rk-flow-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button class="rk-topbar-back" onclick="goBackFromSeats()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+      <div class="rk-topbar-title">اختر مقعدك</div>
+      <div class="rk-topbar-actions"></div>
+    </div>
+  </header>
+  <main class="rk-flow-main rk-seats-layout">
 <div class="viewport">
   <div class="zoom-wrap" id="zoomWrap">
     <div class="seatmap-frame" id="seatmapFrame">
@@ -1901,76 +2501,121 @@ svg.rt-icon { display:inline-block; }
     </div>
   </div>
 </div>
-  </div>
+    <aside class="rk-seats-side">
+      <div class="rk-seats-side-title">ملخص الاختيار</div>
+      <div class="rk-seats-side-row"><span>الرحلة</span><strong id="seatsSideTrip">—</strong></div>
+      <div class="rk-seats-side-row"><span>المقاعد المختارة</span><strong id="seatsSideCount">0 / 1</strong></div>
+      <div class="rk-seats-side-row"><span>أرقام المقاعد</span><strong id="seatsSideNums">—</strong></div>
+      <div class="rk-seats-side-row"><span>السعر التقديري</span><strong id="seatsSidePrice">—</strong></div>
+      <button class="rk-btn rk-btn-primary" id="seatsConfirmBtn" style="margin-top:14px;" onclick="confirmSeats()" disabled>
+        <span class="rk-btn-label"><i class="fas fa-check"></i> تأكيد المقاعد ومتابعة</span>
+        <span class="rk-btn-spinner"></span>
+      </button>
+    </aside>
+  </main>
 </div>
 
 </div>
 
 <!-- ============ شاشتا الدفع والتذكرة ============ -->
+<div class="app-screen" id="screen-passenger">
+<div class="rk-flow-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button class="rk-topbar-back" onclick="goBackFromPassengerInfo()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+      <div class="rk-topbar-title">بيانات المسافرين</div>
+      <div class="rk-topbar-actions"></div>
+    </div>
+  </header>
+  <main class="rk-flow-main rk-pinfo-layout">
+    <div class="rk-pinfo-col-summary">
+      <div class="rk-card rk-card-pad">
+        <div class="rk-section-title" style="margin:0 0 10px;">ملخص الرحلة</div>
+        <div class="rk-booking-route" id="pinfoTripLabel" style="margin-bottom:0;"></div>
+      </div>
+    </div>
+    <div class="rk-pinfo-col-form">
+      <div id="pinfoForm"></div>
+      <button class="rk-btn rk-btn-primary" style="margin-top:8px;" onclick="submitPassengerInfo()">
+        <span class="rk-btn-label">متابعة إلى الدفع <i class="fas fa-arrow-left"></i></span>
+        <span class="rk-btn-spinner"></span>
+      </button>
+    </div>
+  </main>
+</div>
+</div>
+
 <div class="app-screen" id="screen-payment">
-<div class="phone-frame">
-  <div class="side-btn btn-power"></div>
-  <div class="side-btn btn-vol-up"></div>
-  <div class="side-btn btn-vol-down"></div>
-  <div class="phone-screen" style="overflow-y:auto;">
-  <div class="pay-wrap">
-    <div class="pay-header">
-      <button class="pay-back-btn" onclick="cancelPaymentManually()"><i class="fas fa-arrow-right"></i></button>
-      <div class="pay-title">إتمام الدفع</div>
+<div class="rk-flow-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button class="rk-topbar-back" onclick="cancelPaymentManually()" aria-label="رجوع"><i class="fas fa-arrow-right"></i></button>
+      <div class="rk-topbar-title">مراجعة الحجز والدفع</div>
+      <div class="rk-topbar-actions"></div>
     </div>
+  </header>
+  <main class="rk-flow-main rk-pay-layout">
+    <div class="rk-pay-col-summary">
+      <div class="pay-countdown-box">
+        <div class="pay-countdown-label">متبقٍ لإتمام الحجز</div>
+        <div class="pay-countdown-value" id="payCountdown">10:00</div>
+        <div class="pay-countdown-bar-wrap"><div class="pay-countdown-bar-fill" id="payCountdownBar"></div></div>
+      </div>
 
-    <div class="pay-countdown-box">
-      <div class="pay-countdown-label">متبقٍ لإتمام الحجز</div>
-      <div class="pay-countdown-value" id="payCountdown">10:00</div>
-      <div class="pay-countdown-bar-wrap"><div class="pay-countdown-bar-fill" id="payCountdownBar"></div></div>
-    </div>
-
-    <div class="pay-summary-card">
-      <div class="pay-summary-row"><span>الرحلة</span><strong id="payTripLabel"></strong></div>
-      <div class="pay-summary-row"><span>المقاعد</span><strong id="paySeatsLabel"></strong></div>
-      <div class="pay-summary-row pay-total-row"><span>الإجمالي</span><strong id="payTotal"></strong></div>
-    </div>
-
-    <div class="pay-method-card">
-      <div class="pay-method-row">
-        <span><i class="fas fa-wallet"></i> رصيد المحفظة</span>
-        <strong id="payWalletBalance"></strong>
+      <div class="rk-section-title" style="margin-right:0;">مراجعة الحجز</div>
+      <div class="pay-summary-card">
+        <div class="pay-summary-row"><span>الرحلة</span><strong id="payTripLabel"></strong></div>
+        <div class="pay-summary-row"><span>المقاعد</span><strong id="paySeatsLabel"></strong></div>
+        <div class="pay-summary-row" id="payPassengersRow"><span>المسافرون</span><strong id="payPassengersLabel"></strong></div>
+        <div class="pay-summary-row pay-total-row"><span>الإجمالي</span><strong id="payTotal"></strong></div>
       </div>
     </div>
 
-    <button class="pay-wallet-btn" id="payWalletBtn" onclick="payWithWallet()"><i class="fas fa-wallet"></i> الدفع من المحفظة</button>
+    <div class="rk-pay-col-methods">
+      <div class="rk-section-title" style="margin-right:0;">طريقة الدفع</div>
+      <div class="pay-method-card">
+        <div class="pay-method-row">
+          <span><i class="fas fa-wallet"></i> رصيد المحفظة</span>
+          <strong id="payWalletBalance"></strong>
+        </div>
+      </div>
 
-    <button class="pay-cash-btn" id="payCashBtn" onclick="payWithCash()"><i class="fas fa-money-bill-wave"></i> الدفع نقداً عند الصعود</button>
+      <button class="pay-wallet-btn" id="payWalletBtn" onclick="payWithWallet()"><i class="fas fa-wallet"></i> الدفع من المحفظة</button>
 
-    <div class="pay-other-methods">
-      <div class="pay-method-disabled"><i class="fas fa-credit-card"></i> مدى / فيزا / ماستركارد (قريباً)</div>
-      <div class="pay-method-disabled"><i class="fab fa-apple-pay"></i> Apple Pay (قريباً)</div>
+      <button class="pay-cash-btn" id="payCashBtn" onclick="payWithCash()"><i class="fas fa-money-bill-wave"></i> الدفع نقداً عند الصعود</button>
+
+      <div class="pay-other-methods">
+        <div class="pay-method-disabled"><i class="fas fa-credit-card"></i> مدى / فيزا / ماستركارد (قريباً)</div>
+        <div class="pay-method-disabled"><i class="fab fa-apple-pay"></i> Apple Pay (قريباً)</div>
+      </div>
+
+      <div class="pay-cancel-link" onclick="cancelPaymentManually()">إلغاء الحجز والعودة</div>
     </div>
-
-    <div class="pay-cancel-link" onclick="cancelPaymentManually()">إلغاء الحجز والعودة</div>
-  </div>
-  </div>
+  </main>
 </div>
 </div>
 
 <div class="app-screen" id="screen-ticket">
-<div class="phone-frame">
-  <div class="side-btn btn-power"></div>
-  <div class="side-btn btn-vol-up"></div>
-  <div class="side-btn btn-vol-down"></div>
-  <div class="phone-screen" style="overflow-y:auto;">
-  <div class="tkt-wrap2">
-    <div class="tkt-success-icon"><i class="fas fa-check-circle"></i></div>
-    <div class="tkt-title">تم تأكيد حجزك بنجاح!</div>
-    <div class="tkt-subtitle" id="tktSubtitle">جارٍ تحميل التذكرة...</div>
-    <div class="rt-wrapper" id="ticketsContainer"></div>
-    <button class="tkt-done-btn" onclick="finishTicket()">العودة للرئيسية</button>
-  </div>
-  </div>
+<div class="rk-flow-shell">
+  <header class="rk-topbar">
+    <div class="rk-topbar-inner">
+      <button type="button" class="rk-topbar-logo" onclick="finishTicket()"><i class="fas fa-bus"></i> رحال</button>
+      <div class="rk-topbar-actions"><span class="rk-topbar-title">التذكرة الإلكترونية</span></div>
+    </div>
+  </header>
+  <main class="rk-flow-main rk-main-narrow">
+    <div class="tkt-wrap2">
+      <div class="tkt-success-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="tkt-title">تم تأكيد حجزك بنجاح!</div>
+      <div class="tkt-subtitle" id="tktSubtitle">جارٍ تحميل التذكرة...</div>
+      <div class="rt-wrapper" id="ticketsContainer"></div>
+      <button class="tkt-done-btn" onclick="finishTicket()">العودة للرئيسية</button>
+    </div>
+  </main>
 </div>
 </div>
 
-<div id="globalToast"></div>
+<div id="globalToast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
 
 <script>
 
@@ -1989,15 +2634,27 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 
 /* ---------------- عناصر مشتركة: توست + شاشة تحميل + التنقل بين الشاشات ---------------- */
-function toast(msg) {
+function toast(msg, type) {
+  type = type || 'info';
+  const icons = { success: 'fa-check-circle', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
   const t = document.getElementById('globalToast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const textEl = t.querySelector('.toast-text');
+  const iconEl = t.querySelector('.toast-icon');
+  if (textEl) { textEl.textContent = msg; } else { t.textContent = msg; }
+  if (iconEl) { iconEl.className = 'fas ' + (icons[type] || icons.info) + ' toast-icon'; }
+  t.classList.remove('toast-success', 'toast-error', 'toast-info');
+  t.classList.add('toast-' + type, 'show');
   clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 function showLoading(v) {
   document.getElementById('globalLoading').classList.toggle('show', !!v);
+}
+/* ---------------- زر بحالة تحميل (Loading State) موحّدة لكل أزرار rk-btn ---------------- */
+function setButtonLoading(btn, isLoading) {
+  if (!btn) return;
+  if (isLoading) { btn.dataset.wasDisabled = btn.disabled ? '1' : '0'; btn.disabled = true; btn.classList.add('is-loading'); }
+  else { btn.classList.remove('is-loading'); btn.disabled = btn.dataset.wasDisabled === '1'; }
 }
 function showScreen(id) {
   document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
@@ -2024,7 +2681,8 @@ const App = {
   totalAmount: 0,
   booking: null,
   seatPollTimer: null,
-  countdownTimer: null
+  countdownTimer: null,
+  ticketReturnScreen: 'screen-home'
 };
 
 /* =========================================================================
@@ -2366,12 +3024,178 @@ function toggleFav(btn) {
 }
 
 function setNav(btn, page) {
-  if (page === 'account') {
-    if (confirm('هل تريد تسجيل الخروج؟')) signOutApp();
+  if (page === 'home') { showScreen('screen-home'); return; }
+  if (page === 'account') { showScreen('screen-account'); loadAccountScreen(); return; }
+  if (page === 'bookings') { showScreen('screen-bookings'); loadBookingsScreen(); return; }
+  if (page === 'companies') { showScreen('screen-companies'); loadCompaniesScreen(); return; }
+}
+
+/* =========================================================================
+   شاشة حسابي — بيانات حقيقية من profiles + wallets + wallet_transactions
+   ========================================================================= */
+function walletTxLabel(tx) {
+  if (tx.description) return tx.description;
+  const map = { topup: 'إيداع في المحفظة', payment: 'دفع حجز', refund: 'استرجاع مبلغ', adjustment: 'تعديل رصيد' };
+  return map[tx.reference_type] || (tx.type === 'credit' ? 'إيداع في المحفظة' : 'خصم من المحفظة');
+}
+function walletTxRowHtml(tx) {
+  const isCredit = tx.type === 'credit';
+  const d = new Date(tx.created_at);
+  const dateStr = d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { year: 'numeric', month: 'short', day: 'numeric' });
+  return `<div class="rk-tx-row">
+    <div class="rk-tx-icon ${isCredit ? 'credit' : 'debit'}"><i class="fas fa-${isCredit ? 'arrow-down' : 'arrow-up'}"></i></div>
+    <div class="rk-tx-info"><div class="rk-tx-desc">${escapeHtml(walletTxLabel(tx))}</div><div class="rk-tx-date">${dateStr}</div></div>
+    <div class="rk-tx-amount ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '−'}${Math.round(Number(tx.amount))} ر.س</div>
+  </div>`;
+}
+async function loadAccountScreen() {
+  if (!App.session) { showScreen('screen-auth'); return; }
+  const fullName = (App.profile && App.profile.full_name) || App.session.user.email || 'مستخدم رحال';
+  document.getElementById('acctName').textContent = fullName;
+  document.getElementById('acctSub').textContent = (App.profile && App.profile.phone) || App.session.user.email || '';
+  document.getElementById('acctAvatar').textContent = (fullName.trim().charAt(0) || 'ر').toUpperCase();
+  document.getElementById('acctBalance').textContent = App.walletBalance.toFixed(0) + ' ر.س';
+
+  const txWrap = document.getElementById('acctTxList');
+  txWrap.innerHTML = '<div class="rk-empty"><i class="fas fa-spinner fa-spin"></i><div class="rk-empty-title">جارٍ التحميل...</div></div>';
+  if (!App.walletId) {
+    txWrap.innerHTML = '<div class="rk-empty"><i class="fas fa-receipt"></i><div class="rk-empty-title">لا توجد عمليات بعد</div><div class="rk-empty-sub">ستظهر هنا كل عمليات محفظتك</div></div>';
     return;
   }
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  btn.classList.add('active');
+  const { data, error } = await sb.from('wallet_transactions')
+    .select('id, amount, type, reference_type, description, created_at')
+    .eq('wallet_id', App.walletId)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error || !data || !data.length) {
+    txWrap.innerHTML = '<div class="rk-empty"><i class="fas fa-receipt"></i><div class="rk-empty-title">لا توجد عمليات بعد</div><div class="rk-empty-sub">ستظهر هنا كل عمليات محفظتك</div></div>';
+    return;
+  }
+  txWrap.innerHTML = data.map(walletTxRowHtml).join('');
+}
+async function accountLogout() {
+  if (!confirm('هل تريد تسجيل الخروج؟')) return;
+  await signOutApp();
+}
+
+/* =========================================================================
+   شاشة حجوزاتي — بيانات حقيقية من v_booking_details (RLS: حجوزات المستخدم فقط)
+   ========================================================================= */
+const BOOKING_STATUS_MAP = {
+  confirmed: ['مؤكد', 'confirmed'],
+  completed: ['مكتملة', 'confirmed'],
+  pending: ['بانتظار الدفع', 'pending'],
+  pending_payment: ['بانتظار الدفع', 'pending'],
+  cancelled: ['ملغي', 'cancelled'],
+  expired: ['منتهي الصلاحية', 'cancelled']
+};
+function bookingCardHtml(b) {
+  const dep = new Date(b.departure_at);
+  const dateStr = dep.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { year: 'numeric', month: 'short', day: 'numeric' });
+  const timeStr = dep.toLocaleTimeString('ar-SA-u-nu-latn', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const [statusLabel, statusCls] = BOOKING_STATUS_MAP[b.booking_status] || [b.booking_status || '—', 'pending'];
+  const canViewTicket = b.booking_status === 'confirmed' || b.booking_status === 'completed';
+  return `<div class="rk-card rk-booking-card">
+    <div class="rk-booking-top">
+      <span class="rk-booking-number">${escapeHtml(b.booking_number)}</span>
+      <span class="rk-status-pill ${statusCls}">${escapeHtml(statusLabel)}</span>
+    </div>
+    <div class="rk-booking-route"><span>${escapeHtml(b.origin_city_ar || '')}</span><i class="fas fa-arrow-left"></i><span>${escapeHtml(b.destination_city_ar || '')}</span></div>
+    <div class="rk-booking-meta">
+      <div class="rk-booking-meta-item"><div class="rk-booking-meta-label">التاريخ</div><div class="rk-booking-meta-value">${dateStr}</div></div>
+      <div class="rk-booking-meta-item"><div class="rk-booking-meta-label">الوقت</div><div class="rk-booking-meta-value">${timeStr}</div></div>
+      <div class="rk-booking-meta-item"><div class="rk-booking-meta-label">المقاعد</div><div class="rk-booking-meta-value">${escapeHtml(b.seats_count)}</div></div>
+      <div class="rk-booking-meta-item"><div class="rk-booking-meta-label">الإجمالي</div><div class="rk-booking-meta-value">${Math.round(Number(b.total_amount))} ر.س</div></div>
+    </div>
+    ${canViewTicket ? `<div class="rk-booking-actions"><button class="rk-btn rk-btn-primary" onclick="viewBookingTicket('${b.booking_id}', this)"><span class="rk-btn-label"><i class="fas fa-ticket"></i> عرض التذكرة</span><span class="rk-btn-spinner"></span></button></div>` : ''}
+  </div>`;
+}
+let bookingsCurrentFilter = 'all';
+async function loadBookingsScreen() {
+  if (!App.session) { showScreen('screen-auth'); return; }
+  const wrap = document.getElementById('bookingsList');
+  wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-spinner fa-spin"></i><div class="rk-empty-title">جارٍ التحميل...</div></div>';
+  const { data, error } = await sb.from('v_booking_details')
+    .select('*')
+    .eq('customer_id', App.session.user.id)
+    .order('booked_at', { ascending: false })
+    .limit(50);
+  if (error) {
+    wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-triangle-exclamation"></i><div class="rk-empty-title">تعذّر تحميل الحجوزات</div><div class="rk-empty-sub">حاول مجدداً بعد قليل</div></div>';
+    return;
+  }
+  App.bookingsCache = data || [];
+  renderBookingsList();
+}
+function setBookingsFilter(filter, btn) {
+  bookingsCurrentFilter = filter;
+  document.querySelectorAll('.rk-filter-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderBookingsList();
+}
+function renderBookingsList() {
+  const wrap = document.getElementById('bookingsList');
+  const all = App.bookingsCache || [];
+  const now = Date.now();
+  let list = all;
+  if (bookingsCurrentFilter === 'upcoming') {
+    list = all.filter(b => ['confirmed', 'pending', 'pending_payment'].includes(b.booking_status) && new Date(b.departure_at).getTime() >= now);
+  } else if (bookingsCurrentFilter === 'past') {
+    list = all.filter(b => b.booking_status === 'completed' || (b.booking_status === 'confirmed' && new Date(b.departure_at).getTime() < now));
+  } else if (bookingsCurrentFilter === 'cancelled') {
+    list = all.filter(b => ['cancelled', 'expired'].includes(b.booking_status));
+  }
+  if (!list.length) {
+    wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-ticket"></i><div class="rk-empty-title">لا توجد حجوزات هنا</div><div class="rk-empty-sub">' + (all.length ? 'جرّب تبويباً آخر' : 'ستظهر هنا رحلاتك المحجوزة فور إتمام أول حجز') + '</div></div>';
+    return;
+  }
+  wrap.innerHTML = list.map(bookingCardHtml).join('');
+}
+async function viewBookingTicket(bookingId, btn) {
+  setButtonLoading(btn, true);
+  App.ticketReturnScreen = 'screen-bookings';
+  await openTicketScreen('saved', bookingId);
+  setButtonLoading(btn, false);
+}
+
+/* =========================================================================
+   شاشة شركات النقل — بيانات حقيقية من companies (المعتمدة وغير المحذوفة)
+   ========================================================================= */
+function companyCardHtml(c) {
+  const cities = (c.cities_served || []).slice(0, 3).join('، ');
+  const rating = Number(c.rating_avg || 0);
+  const logo = c.logo_url || '';
+  const logoHtml = logo
+    ? `<img class="rk-company-logo" src="${logo}" alt="${escapeHtml(c.name_ar)}" onerror="this.outerHTML='<div class=&quot;rk-company-logo rk-company-logo-fallback&quot;>'+'${escapeHtml((c.name_ar||'ش').trim().charAt(0))}'+'</div>'">`
+    : `<div class="rk-company-logo rk-company-logo-fallback">${escapeHtml((c.name_ar || 'ش').trim().charAt(0))}</div>`;
+  return `<div class="rk-card rk-company-card">
+    ${logoHtml}
+    <div class="rk-company-info">
+      <div class="rk-company-name">${escapeHtml(c.name_ar)}</div>
+      <div class="rk-company-meta">
+        ${rating > 0 ? `<span><i class="fas fa-star"></i> ${rating.toFixed(1)} (${c.rating_count})</span>` : `<span><i class="fas fa-bus"></i> شركة نقل معتمدة</span>`}
+        ${cities ? `<span><i class="fas fa-location-dot"></i> ${escapeHtml(cities)}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+async function loadCompaniesScreen() {
+  const wrap = document.getElementById('companiesList');
+  wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-spinner fa-spin"></i><div class="rk-empty-title">جارٍ التحميل...</div></div>';
+  const { data, error } = await sb.from('companies')
+    .select('id, name_ar, logo_url, description, rating_avg, rating_count, cities_served')
+    .is('deleted_at', null)
+    .eq('status', 'approved')
+    .order('name_ar');
+  if (error) {
+    wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-triangle-exclamation"></i><div class="rk-empty-title">تعذّر تحميل شركات النقل</div></div>';
+    return;
+  }
+  if (!data || !data.length) {
+    wrap.innerHTML = '<div class="rk-empty"><i class="fas fa-building"></i><div class="rk-empty-title">لا توجد شركات معتمدة حالياً</div></div>';
+    return;
+  }
+  wrap.innerHTML = data.map(companyCardHtml).join('');
 }
 
 /* ---- بحث حقيقي عن الرحلات من trip_search_view ---- */
@@ -2533,7 +3357,25 @@ async function openSeatScreen(trip) {
   await loadSeatMap();
   showLoading(false);
   startSeatPolling();
+  updateSeatsSidePanel();
   toast('اختر ' + App.passengerCount + (App.passengerCount === 1 ? ' مقعد' : ' مقاعد'));
+}
+
+function updateSeatsSidePanel() {
+  const tripEl = document.getElementById('seatsSideTrip');
+  const countEl = document.getElementById('seatsSideCount');
+  const numsEl = document.getElementById('seatsSideNums');
+  const priceEl = document.getElementById('seatsSidePrice');
+  const btn = document.getElementById('seatsConfirmBtn');
+  if (!tripEl || !App.selectedTrip) return;
+  tripEl.textContent = App.selectedTrip.origin_city + ' ← ' + App.selectedTrip.dest_city;
+  const n = App.mySelectedSeatNums.size;
+  countEl.textContent = n + ' / ' + App.passengerCount;
+  const nums = [...App.mySelectedSeatNums].sort((a, b) => Number(a) - Number(b));
+  numsEl.textContent = nums.length ? nums.join('، ') : '—';
+  const price = Math.round(Number(App.selectedTrip.price || 0)) * n;
+  priceEl.textContent = n ? (price + ' ر.س') : '—';
+  if (btn) btn.disabled = (n !== App.passengerCount);
 }
 
 async function loadSeatMap() {
@@ -2624,6 +3466,7 @@ function onSeatClick(btn, s) {
     : 'عدد المقاعد المختارة: ' + App.mySelectedSeatNums.size + ' / ' + App.passengerCount);
 
   renderSeatMap();
+  updateSeatsSidePanel();
 }
 
 async function confirmSeats() {
@@ -2660,7 +3503,7 @@ async function confirmSeats() {
   const firstHeld = App.heldSeats.find(s => s.held_until);
   App.holdExpiresAt = firstHeld ? new Date(firstHeld.held_until) : new Date(Date.now() + 10 * 60000);
 
-  openPaymentScreen();
+  openPassengerInfoScreen();
 }
 
 async function goBackFromSeats() {
@@ -2675,6 +3518,67 @@ async function goBackFromSeats() {
 }
 
 /* =========================================================================
+   شاشة بيانات المسافرين — خطوة حقيقية بين اختيار المقعد والدفع
+   ========================================================================= */
+function openPassengerInfoScreen() {
+  showScreen('screen-passenger');
+  const seats = App.heldSeats.slice().sort((a, b) => Number(a.seat_number) - Number(b.seat_number));
+  document.getElementById('pinfoTripLabel').innerHTML =
+    '<span>' + escapeHtml(App.selectedTrip.origin_city) + '</span><i class="fas fa-arrow-left"></i><span>' + escapeHtml(App.selectedTrip.dest_city) + '</span>';
+
+  const form = document.getElementById('pinfoForm');
+  form.innerHTML = seats.map((s, i) => `
+    <div class="rk-card rk-card-pad" style="margin-bottom:12px;">
+      <div class="rk-field-label" style="margin-bottom:8px;">مسافر ${i + 1} — المقعد رقم ${escapeHtml(s.seat_number)}</div>
+      <input type="text" class="rk-input" data-pinfo-name="${i}" placeholder="الاسم الكامل" value="${i === 0 && App.profile && App.profile.full_name ? escapeHtml(App.profile.full_name) : ''}" style="margin-bottom:8px;">
+      <input type="tel" class="rk-input" data-pinfo-phone="${i}" placeholder="رقم الجوال (اختياري)" value="${i === 0 && App.profile && App.profile.phone ? escapeHtml(App.profile.phone) : ''}">
+    </div>
+  `).join('');
+}
+
+async function goBackFromPassengerInfo() {
+  showLoading(true);
+  try {
+    if (App.heldSeats.length) await sb.rpc('release_trip_seats', { p_seat_ids: App.heldSeats.map(s => s.id) });
+  } catch (e) {}
+  App.heldSeats = [];
+  App.mySelectedSeatNums.clear();
+  App.passengerNames = null; App.passengerPhones = null;
+  showLoading(false);
+  showScreen('screen-seats');
+  await loadSeatMap();
+  startSeatPolling();
+}
+
+function submitPassengerInfo() {
+  const seats = App.heldSeats;
+  const names = [];
+  const phones = [];
+  for (let i = 0; i < seats.length; i++) {
+    const nameInput = document.querySelector('[data-pinfo-name="' + i + '"]');
+    const phoneInput = document.querySelector('[data-pinfo-phone="' + i + '"]');
+    const name = (nameInput.value || '').trim();
+    if (!name) { toast('يرجى إدخال اسم كل مسافر', 'error'); nameInput.focus(); return; }
+    names.push(name);
+    phones.push((phoneInput.value || '').trim());
+  }
+  App.passengerNames = names;
+  App.passengerPhones = phones;
+  openPaymentScreen();
+}
+
+function getPassengerNamesAndPhones() {
+  const seatIds = App.heldSeats.map(s => s.id);
+  if (App.passengerNames && App.passengerNames.length === seatIds.length) {
+    return { names: App.passengerNames, phones: (App.passengerPhones && App.passengerPhones.length === seatIds.length) ? App.passengerPhones : seatIds.map(() => '') };
+  }
+  return {
+    names: seatIds.map(() => (App.profile && App.profile.full_name) || 'راكب'),
+    phones: seatIds.map(() => (App.profile && App.profile.phone) || '')
+  };
+}
+
+/* =========================================================================
    شاشة الدفع — عداد 10 دقائق حقيقي + دفع فعلي من المحفظة
    ========================================================================= */
 function openPaymentScreen() {
@@ -2682,6 +3586,13 @@ function openPaymentScreen() {
   const seatsLabel = App.heldSeats.map(s => s.seat_number).sort((a, b) => Number(a) - Number(b)).join('، ');
   document.getElementById('paySeatsLabel').textContent = seatsLabel;
   document.getElementById('payTripLabel').textContent = App.selectedTrip.origin_city + ' ← ' + App.selectedTrip.dest_city;
+  const passengersRow = document.getElementById('payPassengersRow');
+  if (App.passengerNames && App.passengerNames.length) {
+    passengersRow.style.display = '';
+    document.getElementById('payPassengersLabel').textContent = App.passengerNames.join('، ');
+  } else {
+    passengersRow.style.display = 'none';
+  }
 
   const total = Math.round(Number(App.selectedTrip.price)) * App.heldSeats.length;
   App.totalAmount = total;
@@ -2734,6 +3645,7 @@ async function onPaymentTimeout() {
   } catch (e) {}
   showLoading(false);
   App.heldSeats = []; App.booking = null; App.mySelectedSeatNums.clear();
+  App.passengerNames = null; App.passengerPhones = null;
   showScreen('screen-home');
 }
 
@@ -2750,6 +3662,7 @@ async function cancelPaymentManually() {
   } catch (e) {}
   showLoading(false);
   App.heldSeats = []; App.booking = null; App.mySelectedSeatNums.clear();
+  App.passengerNames = null; App.passengerPhones = null;
   showScreen('screen-home');
 }
 
@@ -2760,8 +3673,7 @@ async function payWithWallet() {
   try {
     if (!App.booking) {
       const seatIds = App.heldSeats.map(s => s.id);
-      const names = seatIds.map(() => (App.profile && App.profile.full_name) || 'راكب');
-      const phones = seatIds.map(() => (App.profile && App.profile.phone) || '');
+      const { names, phones } = getPassengerNamesAndPhones();
       const { data, error } = await sb.rpc('create_booking', {
         p_trip_id: App.selectedTrip.trip_id,
         p_seat_ids: seatIds,
@@ -2797,8 +3709,7 @@ async function payWithCash() {
   try {
     if (!App.booking) {
       const seatIds = App.heldSeats.map(s => s.id);
-      const names = seatIds.map(() => (App.profile && App.profile.full_name) || 'راكب');
-      const phones = seatIds.map(() => (App.profile && App.profile.phone) || '');
+      const { names, phones } = getPassengerNamesAndPhones();
       const { data, error } = await sb.rpc('create_booking', {
         p_trip_id: App.selectedTrip.trip_id,
         p_seat_ids: seatIds,
@@ -2829,14 +3740,15 @@ async function payWithCash() {
 /* =========================================================================
    شاشة التذكرة
    ========================================================================= */
-async function openTicketScreen(methodCode) {
+async function openTicketScreen(methodCode, bookingIdOverride) {
   showScreen('screen-ticket');
   showLoading(true);
   const container = document.getElementById('ticketsContainer');
   container.innerHTML = '';
   document.getElementById('tktSubtitle').textContent = 'جارٍ تحميل التذكرة...';
+  const targetBookingId = bookingIdOverride || (App.booking && App.booking.booking_id);
   try {
-    const { data, error } = await sb.rpc('get_ticket_details', { p_booking_id: App.booking.booking_id });
+    const { data, error } = await sb.rpc('get_ticket_details', { p_booking_id: targetBookingId });
     if (error) throw error;
     const details = data;
     (details.passengers || []).forEach((p, i) => {
@@ -2846,7 +3758,9 @@ async function openTicketScreen(methodCode) {
     const n = (details.passengers || []).length;
     document.getElementById('tktSubtitle').textContent = n > 1 ? ('تم إصدار ' + n + ' تذاكر لهذا الحجز') : 'تم إصدار تذكرتك';
   } catch (err) {
-    document.getElementById('tktSubtitle').textContent = 'حجزك مؤكد برقم ' + (App.booking && App.booking.booking_number) + ' — تعذّر عرض تفاصيل التذكرة الكاملة الآن';
+    document.getElementById('tktSubtitle').textContent = (App.booking && App.booking.booking_number)
+      ? ('حجزك مؤكد برقم ' + App.booking.booking_number + ' — تعذّر عرض تفاصيل التذكرة الكاملة الآن')
+      : 'تعذّر تحميل تفاصيل هذه التذكرة الآن، حاول مجدداً لاحقاً';
   }
   showLoading(false);
 }
@@ -3225,7 +4139,10 @@ async function handleTicketShareClick(ticket) {
 
 function finishTicket() {
   App.selectedTrip = null; App.heldSeats = []; App.booking = null; App.mySelectedSeatNums.clear();
-  showScreen('screen-home');
+  const back = App.ticketReturnScreen || 'screen-home';
+  App.ticketReturnScreen = 'screen-home';
+  showScreen(back);
+  if (back === 'screen-bookings') loadBookingsScreen();
 }
 
 </script>
